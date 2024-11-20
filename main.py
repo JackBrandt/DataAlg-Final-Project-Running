@@ -31,5 +31,6 @@ interview_y_train = ["False", "False", "True", "True",
                         "True", "True", "True", "True",
                           "True", "False"]
 
-forest = mc.MyRandomForestClassifier().fit(interview_X_train,interview_y_train,
-                                           1,1,4,0)
+forest = mc.MyRandomForestClassifier()
+forest.fit(interview_X_train,interview_y_train,1,1,4,0)
+forest.fit(interview_X_train,interview_y_train,5,3,1,0)

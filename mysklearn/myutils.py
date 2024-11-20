@@ -258,3 +258,11 @@ def compute_bootstrapped_sample(table, seed=None):
     out_of_bag_indexes = [index for index in list(range(n)) if index not in sampled_indexes]
     out_of_bag_sample = [table[index] for index in out_of_bag_indexes]
     return sample, out_of_bag_sample
+
+def compute_random_subset(values, num_values,seed=None):
+    '''Selects F random attributes from an attribute list'''
+    if seed is not None:
+        np.random.seed(seed)
+    values_copy = values[:] # shallow copy
+    np.random.shuffle(values_copy) # in place shuffle
+    return values_copy[:num_values]

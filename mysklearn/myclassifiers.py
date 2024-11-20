@@ -13,11 +13,12 @@
 import operator
 import math
 import os
+import time
 import numpy as np
 from mysklearn.myutils import compute_euclidean_distance, classifier_accuracy,\
-    discretizer_classifier, compute_bootstrapped_sample
+    discretizer_classifier, compute_bootstrapped_sample, compute_random_subset
 import mysklearn.myutils as mu
-from mysklearn.myevaluation import stratified_kfold_split
+from mysklearn.myevaluation import stratified_kfold_split, train_test_split
 from mysklearn.mysimplelinearregressor import MySimpleLinearRegressor
 
 
@@ -926,8 +927,7 @@ class MyRandomForestClassifier:
         M (int): number of best trees chosen, i.e., generated N trees but final
                 algorithm only uses the M best of them
         F (int): Size of each tree's available attributes
-        trees (list of MyDecisionTreeClassifier): A list of all the trees that
-                make up the forest
+        trees (list of lists): A list of the form [[MyDecisionTreeClassifier, [the subattributes that formed the tree]],[MyDec..., [the subattributes that formed the tree]],...]
         TODO: idk expand this list as needed.
 
     Notes:
@@ -972,9 +972,10 @@ class MyRandomForestClassifier:
         self.N = N
         self.M = M
         self.F = F
-        # Set seed if applicable
-        if seed is not None:
-            np.random.seed(seed)
+        # Set seed
+        if seed is None: # Guarentees randomness to the second
+            seed=round(time.time())
+        np.random.seed(seed)
 
         # Step 1: Generate a *random stratified* test set consisting of one
             # third of the original data set, with the remaining two thirds of the
@@ -995,16 +996,18 @@ class MyRandomForestClassifier:
             # remaining attributes as candidates to partition on. This is the standard random forest approach
             # discussed in class. Note that to build your decision trees you should still use entropy; however,
             # you are selecting from only a (randomly chosen) subset of the available attributes.
-        # Step 2.1: The bootstrapping
-        if seed is None:
-            seed=np.random.randint(0,1000000)
-        sampled_x, unsampled_y = compute_bootstrapped_sample(remainder_X,seed)
-        sampled_y, unsampled_y = compute_bootstrapped_sample(remainder_y,seed)
             # ^-- These should be parallel because of seeding
-        # Step 2.2, choosing attributes and making decision trees
         for _ in range(N):
-            # Randomly sample attributes
-            TODO: NotImplementedError
+            # Step 2.1: The bootstrapping
+            b_seed = np.random.randint(0,1000000)
+            #print(b_seed)
+            sampled_x, unsampled_y = compute_bootstrapped_sample(remainder_X,b_seed)
+            sampled_y, unsampled_y = compute_bootstrapped_sample(remainder_y,b_seed)
+            # Step 2.2, choosing attributes and making decision trees
+            # Randomly sample F attributes
+            attribute_subset = compute_random_subset(list(range(len(sampled_x[0]))),F)
+            attribute_subset.sort()
+            print(attribute_subset)
             # ^-- As far as I can tell, getting to here is kinda what we need to know what trees to make to test against?
             # Make decision tree from sample
             TODO: NotImplementedError
