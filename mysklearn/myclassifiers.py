@@ -998,7 +998,7 @@ class MyRandomForestClassifier:
             # you are selecting from only a (randomly chosen) subset of the available attributes.
             # ^-- These should be parallel because of seeding
         for _ in range(N):
-            # Step 2.1: The bootstrapping
+            # Step 2.1: The bootstrapping <- Also need to know this for testing
             b_seed = np.random.randint(0,1000000)
             #print(b_seed)
             sampled_x, unsampled_y = compute_bootstrapped_sample(remainder_X,b_seed)

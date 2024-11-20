@@ -656,44 +656,44 @@ def test_random_forest_classifier_fit():
     # This first test is against N=1, M=1, F=4, or in other words just the normal decision tree
         # Make tree to test against based off bootstrap sample the .fit() uses
     interview_tree = MyDecisionTreeClassifier()
-    interview_tree.fit() # Gotta fill in fits
+    interview_tree.fit(NotImplemented) # Gotta fill in fits
     assert test_forest.trees == [[interview_tree.tree,[0,1,2,3]]]
     # Test 2: N=5, M=3, F=1 (Best 3/5 decision trees, each with 1 attribute)
     # Make tree to test against based off bootstrap sample the .fit() uses
     tree_1 = MyDecisionTreeClassifier()
-    tree_1.fit() # Gotta fill in fits
+    tree_1.fit(NotImplemented) # Gotta fill in fits
     tree_2 = MyDecisionTreeClassifier()
-    tree_2.fit()
+    tree_2.fit(NotImplemented)
     tree_3 = MyDecisionTreeClassifier()
-    tree_3.fit()
+    tree_3.fit(NotImplemented)
     test_forest.fit(interview_X_train,interview_y_train,5,3,1,seed=0)
-    assert test_forest.trees == [[tree_1.tree,['att']],
-                                 [tree_2.tree,['att']],
-                                 [tree_3.tree,['att']]] # Still gotta fill in attributes
+    assert test_forest.trees == [[tree_1.tree,[NotImplemented]],
+                                 [tree_2.tree,[NotImplemented]],
+                                 [tree_3.tree,[NotImplemented]]] # Still gotta fill in attributes
     # Test 3: N=20, M=7, F=2 (Best 7/20 decision trees, each with 2 attributes)
     test_forest.fit(interview_X_train,interview_y_train,20,7,2,seed=0)
     # Make tree to test against based off bootstrap sample the .fit() uses
     tree_1 = MyDecisionTreeClassifier()
-    tree_1.fit() # Gotta fill in fits
+    tree_1.fit(NotImplemented) # Gotta fill in fits
     tree_2 = MyDecisionTreeClassifier()
-    tree_2.fit()
+    tree_2.fit(NotImplemented)
     tree_3 = MyDecisionTreeClassifier()
-    tree_3.fit()
+    tree_3.fit(NotImplemented)
     tree_4 = MyDecisionTreeClassifier()
-    tree_4.fit() # Gotta fill in fits
+    tree_4.fit(NotImplemented) # Gotta fill in fits
     tree_5 = MyDecisionTreeClassifier()
-    tree_5.fit()
+    tree_5.fit(NotImplemented)
     tree_6 = MyDecisionTreeClassifier()
-    tree_6.fit()
+    tree_6.fit(NotImplemented)
     tree_7 = MyDecisionTreeClassifier()
-    tree_7.fit()
-    assert test_forest.trees == [[tree_1.tree,['att']],
-                                 [tree_2.tree,['att']],
-                                 [tree_3.tree,['att']],
-                                 [tree_4.tree,['att']],
-                                 [tree_5.tree,['att']],
-                                 [tree_6.tree,['att']],
-                                 [tree_7.tree,['att']]] # Still gotta fill in attributes
+    tree_7.fit(NotImplemented)
+    assert test_forest.trees == [[tree_1.tree,[NotImplemented]],
+                                 [tree_2.tree,[NotImplemented]],
+                                 [tree_3.tree,[NotImplemented]],
+                                 [tree_4.tree,[NotImplemented]],
+                                 [tree_5.tree,[NotImplemented]],
+                                 [tree_6.tree,[NotImplemented]],
+                                 [tree_7.tree,[NotImplemented]]] # Still gotta fill in attributes
 
 
 def test_random_forest_classifier_predict():
