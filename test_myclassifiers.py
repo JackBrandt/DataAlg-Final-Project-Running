@@ -13,7 +13,8 @@
 import numpy as np
 from mysklearn.myclassifiers import MyNaiveBayesClassifier
 from mysklearn.myclassifiers import MySimpleLinearRegressionClassifier,\
-    MyKNeighborsClassifier, MyDummyClassifier, MyDecisionTreeClassifier
+    MyKNeighborsClassifier, MyDummyClassifier, MyDecisionTreeClassifier,\
+    MyRandomForestClassifier
 from mysklearn.myutils import discretizer
 
 # from in-class #1  (4 instances)
@@ -624,9 +625,37 @@ def test_decision_tree_classifier_predict():
     assert test_tree.predict([iphone_instance1]) == ['yes']
     assert test_tree.predict([iphone_instance2]) == ['yes']
 
+# Apparently we'll be GRADED on using a test driven approach
+# so we should do these first
 def test_random_forest_classifier_fit():
     '''Test random_forest_classifier_fit()'''
-    TODO: NotImplementedError
+    # Create
+    test_forest = MyRandomForestClassifier()
+    # We are encourage to use the interview dataset with
+    # different parameters
+    # Use seed=0 for all of these for consistency
+    # Test 1: N=1,M=1,F=4 (Just 1 decision tree)
+    test_forest.fit(interview_X_train,interview_y_train,1,1,4,seed=0)
+    # Check to make sure parameters are properly set
+    # What we really care about is test_forest.trees, but we'll check the others
+    # the first time just in case
+    test_forest.X_train=interview_X_train
+    test_forest.y_train=interview_y_train
+    test_forest.N=1
+    test_forest.M=1
+    test_forest.F=4
+    # check trees
+    # In order to check if fit is working correctly, we must see what attributes
+    # are being sent for each of the N trees when seed=0, then make all those
+    # trees by hand, pick the M best of them, then compare fit against a list
+    # of those M best
+    assert test_forest.trees == []
+    # Test 2: N=5, M=3, F=1 (Best 3/5 decision trees, each with 1 attribute)
+    test_forest.fit(interview_X_train,interview_y_train,5,3,1,seed=0)
+    assert test_forest.trees == []
+    # Test 3: N=20, M=7, F=2 (Best 7/20 decision trees, each with 2 attributes)
+    test_forest.fit(interview_X_train,interview_y_train,20,7,2,seed=0)
+    assert test_forest.trees == []
 
 def test_random_forest_classifier_predict():
     '''Tests random_forest_classifier_predict()'''

@@ -911,3 +911,86 @@ class MyDecisionTreeClassifier:
 
         # Finish with a terminal command to run the .dot file to make pdf
         os.system(f'dot -Tpdf -o tree_viz/{pdf_fname} {dot_fname}')
+
+
+class MyRandomForestClassifier:
+    """Represents a random forest classifier.
+
+    Attributes:
+        X_train(list of list of obj): The list of training instances (samples).
+                The shape of X_train is (n_train_samples, n_features)
+        y_train(list of obj): The target y values (parallel to X_train).
+            The shape of y_train is n_samples
+        N (int): number of trees to generate
+        M (int): number of best trees chosen, i.e., generated N trees but final
+                algorithm only uses the M best of them
+        F (int): Size of each tree's available attributes
+        trees (list of MyDecisionTreeClassifier): A list of all the trees that
+                make up the forest
+        TODO: idk expand this list as needed.
+
+    Notes:
+        Loosely based on prof's notes:
+            https://github.com/GonzagaCPSC322/U6-Ensemble-Learning
+        * Test-driven development time! *
+        N, M, and F, are all parameters that need to be tuned by trial and error
+        but because of random, each setting will be need to be tried multiple times
+    """
+
+    def __init__(self):
+        """Initializer for MyDecisionTreeClassifier.
+        """
+        self.X_train = None
+        self.y_train = None
+        self.N = None
+        self.M = None
+        self.F = None
+        self.trees = None
+
+    def fit(self, X_train, y_train, N, M, F, seed=None):
+        """Fits a decision tree classifier to X_train and y_train using the TDIDT
+        (top down induction of decision tree) algorithm.
+
+        Args:
+            X_train(list of list of obj): The list of training instances (samples).
+                The shape of X_train is (n_train_samples, n_features)
+            y_train(list of obj): The target y values (parallel to X_train)
+                The shape of y_train is n_train_samples
+            N (int): number of trees to generate
+            M (int): number of best trees chosen, i.e., generated N trees but final
+                algorithm only uses the M best of them
+            F (int): Size of each tree's available attributes
+
+        Notes:
+            Should
+        """
+        # First set object variables
+        self.X_train = X_train
+        self.y_train = y_train
+        self.N = N
+        self.M = M
+        self.F = F
+        # Set seed if applicable
+        if seed is not None:
+            np.random.seed(seed)
+        # And then?
+        # Write tests first!
+        TODO: NotImplementedError
+        # Something about bootstrapping data?
+        # Something about randomly sampling attribtues?
+        # Premade functions for both of these are in:
+        # https://github.com/GonzagaCPSC322/U6-Ensemble-Learning/blob/master/A%20Ensemble%20Learning.ipynb
+
+
+    def predict(self, X_test):
+        """Makes predictions for test instances in X_test.
+
+        Args:
+            X_test(list of list of obj): The list of testing samples
+                The shape of X_test is (n_test_samples, n_features)
+
+        Returns:
+            y_predicted(list of obj): The predicted target y values (parallel to X_test)
+        """
+        TODO: NotImplementedError
+        # Write tests first!
