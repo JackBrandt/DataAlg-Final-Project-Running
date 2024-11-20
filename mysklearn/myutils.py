@@ -239,3 +239,22 @@ def all_same_class(instances):
             return False
     # get here, then all same class labels
     return True
+
+def compute_bootstrapped_sample(table, seed=None):
+    '''Computes a bootstrapped sample from a table
+    Args:
+        table (list of lists): The table you are sampling
+        seed (int): Optional parameter to seed np.random
+    Returns:
+        sample (list of lists): This is everything that was picked by sampling
+        out_of_bag_sample (list of lists): This is everything that wasn't picked
+    '''
+    if seed is not None:
+        np.random.seed(seed)
+    n = len(table)
+    # np.random.randint(low, high) returns random integers from low (inclusive) to high (exclusive)
+    sampled_indexes = [np.random.randint(0, n) for _ in range(n)]
+    sample = [table[index] for index in sampled_indexes]
+    out_of_bag_indexes = [index for index in list(range(n)) if index not in sampled_indexes]
+    out_of_bag_sample = [table[index] for index in out_of_bag_indexes]
+    return sample, out_of_bag_sample

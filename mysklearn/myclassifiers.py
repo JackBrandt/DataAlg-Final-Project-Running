@@ -1,6 +1,7 @@
 """
 #=====================================================================================
-#Jack Brandt
+#Jack Brandt TODO: Go through and change names in all mysklearn to include
+#               Suyash and change assignments and dates according for this project
 #Course: CPSC 322
 #Assignment: PA7
 #Date of current version: 11/0?/2024
@@ -13,10 +14,10 @@ import operator
 import math
 import os
 import numpy as np
-from mysklearn.myutils import compute_euclidean_distance
-from mysklearn.myutils import classifier_accuracy
-from mysklearn.myutils import discretizer_classifier
+from mysklearn.myutils import compute_euclidean_distance, classifier_accuracy,\
+    discretizer_classifier, compute_bootstrapped_sample
 import mysklearn.myutils as mu
+from mysklearn.myevaluation import stratified_kfold_split
 from mysklearn.mysimplelinearregressor import MySimpleLinearRegressor
 
 
@@ -962,9 +963,10 @@ class MyRandomForestClassifier:
             F (int): Size of each tree's available attributes
 
         Notes:
-            Should
+            Stole some functions from:
+                https://github.com/GonzagaCPSC322/U6-Ensemble-Learning/blob/master/A%20Ensemble%20Learning.ipynb
         """
-        # First set object variables
+        # Step 0: set object variables
         self.X_train = X_train
         self.y_train = y_train
         self.N = N
@@ -973,14 +975,42 @@ class MyRandomForestClassifier:
         # Set seed if applicable
         if seed is not None:
             np.random.seed(seed)
-        # And then?
-        # Write tests first!
-        TODO: NotImplementedError
-        # Something about bootstrapping data?
-        # Something about randomly sampling attribtues?
-        # Premade functions for both of these are in:
-        # https://github.com/GonzagaCPSC322/U6-Ensemble-Learning/blob/master/A%20Ensemble%20Learning.ipynb
 
+        # Step 1: Generate a *random stratified* test set consisting of one
+            # third of the original data set, with the remaining two thirds of the
+            # instances forming the 'remainder set'.
+        # In otherwords, do stratified kfold split with k=3, and simply choose one of the folds
+        folds=stratified_kfold_split(X_train,y_train,3,seed,True)
+        # Simply pick first fold
+        fold=folds[0]
+        # Convert back from indices to instances
+        test_X=[X_train[x] for x in fold[1]]
+        test_y=[y_train[y] for y in fold[1]]
+        remainder_X=[X_train[x] for x in fold[0]]
+        remainder_y=[y_train[x] for x in fold[0]]
+        # ^--- Probably a good idea to verify this works like I think it does
+
+        # Step 2: Generate N "random" decision trees using bootstrapping (giving a training and validation set)
+            # over the remainder set. At each node, build your decision trees by randomly selecting F of the
+            # remaining attributes as candidates to partition on. This is the standard random forest approach
+            # discussed in class. Note that to build your decision trees you should still use entropy; however,
+            # you are selecting from only a (randomly chosen) subset of the available attributes.
+        # Step 2.1: The bootstrapping
+        if seed is None:
+            seed=np.random.randint(0,1000000)
+        sampled_x, unsampled_y = compute_bootstrapped_sample(remainder_X,seed)
+        sampled_y, unsampled_y = compute_bootstrapped_sample(remainder_y,seed)
+            # ^-- These should be parallel because of seeding
+        # Step 2.2, choosing attributes and making decision trees
+        for _ in range(N):
+            # Randomly sample attributes
+            TODO: NotImplementedError
+            # ^-- As far as I can tell, getting to here is kinda what we need to know what trees to make to test against?
+            # Make decision tree from sample
+            TODO: NotImplementedError
+
+        # Step 3: Select the M most accurate of the N decision trees using the corresponding validation sets.
+            TODO: NotImplementedError
 
     def predict(self, X_test):
         """Makes predictions for test instances in X_test.

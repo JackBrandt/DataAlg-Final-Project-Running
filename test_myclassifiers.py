@@ -637,25 +637,31 @@ def test_random_forest_classifier_fit():
     # Test 1: N=1,M=1,F=4 (Just 1 decision tree)
     test_forest.fit(interview_X_train,interview_y_train,1,1,4,seed=0)
     # Check to make sure parameters are properly set
-    # What we really care about is test_forest.trees, but we'll check the others
-    # the first time just in case
-    test_forest.X_train=interview_X_train
-    test_forest.y_train=interview_y_train
-    test_forest.N=1
-    test_forest.M=1
-    test_forest.F=4
-    # check trees
-    # In order to check if fit is working correctly, we must see what attributes
-    # are being sent for each of the N trees when seed=0, then make all those
-    # trees by hand, pick the M best of them, then compare fit against a list
-    # of those M best
-    assert test_forest.trees == []
+        # What we really care about is test_forest.trees, but we'll check the others
+        # the first time just in case
+    assert test_forest.X_train == interview_X_train
+    assert test_forest.y_train == interview_y_train
+    assert test_forest.N == 1
+    assert test_forest.M == 1
+    assert test_forest.F == 4
+    # The algorithm follows the following steps
+    # 1. Generate stratified test set with one third for testing, and 2/3 remainder
+        # This is more or less given to us, so it should be fine
+        # By seeding with 0, this should be the same for all tests
+    # 2. Generate N 'random' decision trees using bootstraping over the remainder set
+        # The bootstraping is also given to us, and we already have a test for checking
+        # decision trees
+    # 3. Select the M most accurate of the N decision trees using validation sets
+        # So, finally, check trees
+    # This first test is against N=1, M=1, F=4, or in other words just the normal decision tree
+    assert test_forest.trees == [MyDecisionTreeClassifier().fit(interview_X_train,
+                                                                interview_y_train).tree]
     # Test 2: N=5, M=3, F=1 (Best 3/5 decision trees, each with 1 attribute)
     test_forest.fit(interview_X_train,interview_y_train,5,3,1,seed=0)
-    assert test_forest.trees == []
+    assert test_forest.trees == [] #IDK what to put here yet
     # Test 3: N=20, M=7, F=2 (Best 7/20 decision trees, each with 2 attributes)
     test_forest.fit(interview_X_train,interview_y_train,20,7,2,seed=0)
-    assert test_forest.trees == []
+    assert test_forest.trees == [] #IDK what to put here yet
 
 def test_random_forest_classifier_predict():
     '''Tests random_forest_classifier_predict()'''
