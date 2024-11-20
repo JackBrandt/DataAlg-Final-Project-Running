@@ -997,23 +997,27 @@ class MyRandomForestClassifier:
             # discussed in class. Note that to build your decision trees you should still use entropy; however,
             # you are selecting from only a (randomly chosen) subset of the available attributes.
             # ^-- These should be parallel because of seeding
-        for _ in range(N):
+        all_trees = []
+        for n in range(N):
             # Step 2.1: The bootstrapping <- Also need to know this for testing
-            b_seed = np.random.randint(0,1000000)
-            #print(b_seed)
-            sampled_x, unsampled_y = compute_bootstrapped_sample(remainder_X,b_seed)
-            sampled_y, unsampled_y = compute_bootstrapped_sample(remainder_y,b_seed)
+            print(seed+n)
+            training_X, validation_X = compute_bootstrapped_sample(remainder_X,seed+n)
+            training_y, validation_y = compute_bootstrapped_sample(remainder_y,seed+n)
+            #print(len(training_X),len(validation_X))
             # Step 2.2, choosing attributes and making decision trees
             # Randomly sample F attributes
-            attribute_subset = compute_random_subset(list(range(len(sampled_x[0]))),F)
+            attribute_subset = compute_random_subset(list(range(len(training_X[0]))),F)
             attribute_subset.sort()
             print(attribute_subset)
             # ^-- As far as I can tell, getting to here is kinda what we need to know what trees to make to test against?
             # Make decision tree from sample
-            TODO: NotImplementedError
+            tree = MyDecisionTreeClassifier()
+            tree.fit(training_X,training_y)
+            all_trees.append([tree.tree,attribute_subset])
 
         # Step 3: Select the M most accurate of the N decision trees using the corresponding validation sets.
             TODO: NotImplementedError
+            self.trees = all_trees
 
     def predict(self, X_test):
         """Makes predictions for test instances in X_test.

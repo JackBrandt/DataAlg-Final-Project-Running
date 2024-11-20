@@ -15,7 +15,8 @@ from mysklearn.myclassifiers import MyNaiveBayesClassifier
 from mysklearn.myclassifiers import MySimpleLinearRegressionClassifier,\
     MyKNeighborsClassifier, MyDummyClassifier, MyDecisionTreeClassifier,\
     MyRandomForestClassifier
-from mysklearn.myutils import discretizer
+from mysklearn.myutils import discretizer, compute_bootstrapped_sample, get_column
+from mysklearn.myevaluation import stratified_kfold_split
 
 # from in-class #1  (4 instances)
 # This is the normalized data
@@ -656,20 +657,43 @@ def test_random_forest_classifier_fit():
     # This first test is against N=1, M=1, F=4, or in other words just the normal decision tree
         # Make tree to test against based off bootstrap sample the .fit() uses
     interview_tree = MyDecisionTreeClassifier()
-    interview_tree.fit(NotImplemented) # Gotta fill in fits
+    # Generic data split for seed=0:
+    folds=stratified_kfold_split(interview_X_train,interview_y_train,3,0,True)
+    fold = folds[0]
+    remainder_X=[interview_X_train[x] for x in fold[0]]
+    remainder_y=[interview_y_train[x] for x in fold[0]]
+    # Now get training X, for making the tree
+    training_X, _ = compute_bootstrapped_sample(remainder_X,0)
+    training_y, _ = compute_bootstrapped_sample(remainder_y,0)
+    interview_tree.fit(training_X, training_y) # Gotta fill in fits
     assert test_forest.trees == [[interview_tree.tree,[0,1,2,3]]]
+
     # Test 2: N=5, M=3, F=1 (Best 3/5 decision trees, each with 1 attribute)
     # Make tree to test against based off bootstrap sample the .fit() uses
+    training_X, _ = compute_bootstrapped_sample(remainder_X,2) # The seed for these depends on what number tree that is generated is the best
+    training_y, _ = compute_bootstrapped_sample(remainder_y,2) # Seed y has to match the one on X
+    # Gotta reduce training X/y to just the selected attribute
+    reduced_training_X = get_column(1,training_X)
     tree_1 = MyDecisionTreeClassifier()
-    tree_1.fit(NotImplemented) # Gotta fill in fits
+    tree_1.fit(reduced_training_X,training_y) # Gotta fill in fits
+
+    training_X, _ = compute_bootstrapped_sample(remainder_X,3)
+    training_y, _ = compute_bootstrapped_sample(remainder_y,3)
+    reduced_training_X = get_column(1, training_X)
     tree_2 = MyDecisionTreeClassifier()
-    tree_2.fit(NotImplemented)
+    tree_2.fit(reduced_training_X,training_y)
+
+    training_X, _ = compute_bootstrapped_sample(remainder_X,4)
+    training_y, _ = compute_bootstrapped_sample(remainder_y,4)
+    reduced_training_X = get_column(2, training_X)
     tree_3 = MyDecisionTreeClassifier()
-    tree_3.fit(NotImplemented)
+    tree_3.fit(reduced_training_X,training_y)
+
     test_forest.fit(interview_X_train,interview_y_train,5,3,1,seed=0)
-    assert test_forest.trees == [[tree_1.tree,[NotImplemented]],
-                                 [tree_2.tree,[NotImplemented]],
-                                 [tree_3.tree,[NotImplemented]]] # Still gotta fill in attributes
+    assert test_forest.trees == [[tree_1.tree,[1]],
+                                 [tree_2.tree,[1]],
+                                 [tree_3.tree,[2]]]
+
     # Test 3: N=20, M=7, F=2 (Best 7/20 decision trees, each with 2 attributes)
     test_forest.fit(interview_X_train,interview_y_train,20,7,2,seed=0)
     # Make tree to test against based off bootstrap sample the .fit() uses

@@ -260,9 +260,18 @@ def compute_bootstrapped_sample(table, seed=None):
     return sample, out_of_bag_sample
 
 def compute_random_subset(values, num_values,seed=None):
-    '''Selects F random attributes from an attribute list'''
+    '''Selects F random attributes from an attribute list
+    Args:
+        values (any): List of attributes
+        num_values (int): The number of values you want to choose for subset
+        seed (int): Defaults to None, set if you want to seed np.random
+    Returns:
+        list: Your subset of attributes
+    '''
     if seed is not None:
         np.random.seed(seed)
     values_copy = values[:] # shallow copy
     np.random.shuffle(values_copy) # in place shuffle
     return values_copy[:num_values]
+
+get_column = lambda index, table: [[row[index]] for row in table]
