@@ -1025,7 +1025,7 @@ class MyRandomForestClassifier:
         tree_accuracies.sort(key=lambda x: x[0], reverse=True)
         indicies_of_M_trees = [accuracy[1] for accuracy in tree_accuracies[:M]]
         self.trees = [all_trees[i] for i in indicies_of_M_trees]
-        print(self.trees)
+        # print(self.trees)
 
     def predict(self, X_test):
         """Makes predictions for test instances in X_test.

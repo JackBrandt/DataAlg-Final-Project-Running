@@ -627,6 +627,72 @@ def test_decision_tree_classifier_predict():
     assert test_tree.predict([iphone_instance1]) == ['yes']
     assert test_tree.predict([iphone_instance2]) == ['yes']
 
+# Generic data split for seed=0:
+folds=stratified_kfold_split(interview_X_train,interview_y_train,3,0,True)
+fold = folds[0]
+remainder_X=[interview_X_train[x] for x in fold[0]]
+remainder_y=[interview_y_train[x] for x in fold[0]]
+interview_tree = MyDecisionTreeClassifier()
+# Now get training X, for making the tree
+training_X, _ = compute_bootstrapped_sample(remainder_X,0)
+training_y, _ = compute_bootstrapped_sample(remainder_y,0)
+interview_tree.fit(training_X, training_y) # Gotta fill in fits
+forest_solution1=[[interview_tree.tree,[0,1,2,3]]]
+
+# Make tree to test against based off bootstrap sample the .fit() uses
+training_X, _ = compute_bootstrapped_sample(remainder_X,0) # The seed for these depends on what number tree that is generated is the best
+training_y, _ = compute_bootstrapped_sample(remainder_y,0) # Seed y has to match the one on X
+# Gotta reduce training X/y to just the selected attribute
+reduced_training_X = get_column(1,training_X)
+tree_1 = MyDecisionTreeClassifier()
+tree_1.fit(reduced_training_X,training_y) # Gotta fill in fits
+
+training_X, _ = compute_bootstrapped_sample(remainder_X,3)
+training_y, _ = compute_bootstrapped_sample(remainder_y,3)
+reduced_training_X = get_column(1, training_X)
+tree_2 = MyDecisionTreeClassifier()
+tree_2.fit(reduced_training_X,training_y)
+
+training_X, _ = compute_bootstrapped_sample(remainder_X,4)
+training_y, _ = compute_bootstrapped_sample(remainder_y,4)
+reduced_training_X = get_column(2, training_X)
+tree_3 = MyDecisionTreeClassifier()
+tree_3.fit(reduced_training_X,training_y)
+
+forest_solution2=[[tree_3.tree,[2]],
+    [tree_2.tree,[1]],
+    [tree_1.tree,[1]]]
+
+# Make tree to test against based off bootstrap sample the .fit() uses
+forest_solution3 = []
+attributes = [[0, 1],
+    [1, 3],
+    [0, 1],
+    [1, 3],
+    [0, 2],
+    [1, 2],
+    [1, 2],
+    [0, 1],
+    [2, 3],
+    [2, 3],
+    [1, 2],
+    [2, 3],
+    [0, 2],
+    [0, 1],
+    [1, 2],
+    [2, 3],
+    [2, 3],
+    [0, 3],
+    [0, 2],
+    [0, 2]]
+for num in [4,9,10,5,6,12,15]:
+    training_X, _ = compute_bootstrapped_sample(remainder_X,num)
+    training_y, _ = compute_bootstrapped_sample(remainder_y,num)
+    reduced_training_X = get_columns(attributes[num],training_X)
+    this_tree = MyDecisionTreeClassifier()
+    this_tree.fit(reduced_training_X,training_y)
+    forest_solution3.append([this_tree.tree,attributes[num]])
+
 # Apparently we'll be GRADED on using a test driven approach
 # so we should do these first
 def test_random_forest_classifier_fit():
@@ -657,86 +723,60 @@ def test_random_forest_classifier_fit():
         # So, finally, check trees
     # This first test is against N=1, M=1, F=4, or in other words just the normal decision tree
         # Make tree to test against based off bootstrap sample the .fit() uses
-    interview_tree = MyDecisionTreeClassifier()
-    # Generic data split for seed=0:
-    folds=stratified_kfold_split(interview_X_train,interview_y_train,3,0,True)
-    fold = folds[0]
-    remainder_X=[interview_X_train[x] for x in fold[0]]
-    remainder_y=[interview_y_train[x] for x in fold[0]]
-    # Now get training X, for making the tree
-    training_X, _ = compute_bootstrapped_sample(remainder_X,0)
-    training_y, _ = compute_bootstrapped_sample(remainder_y,0)
-    interview_tree.fit(training_X, training_y) # Gotta fill in fits
-    assert test_forest.trees == [[interview_tree.tree,[0,1,2,3]]]
+    assert test_forest.trees == forest_solution1
 
     # Test 2: N=5, M=3, F=1 (Best 3/5 decision trees, each with 1 attribute)
-    # Make tree to test against based off bootstrap sample the .fit() uses
-    training_X, _ = compute_bootstrapped_sample(remainder_X,0) # The seed for these depends on what number tree that is generated is the best
-    training_y, _ = compute_bootstrapped_sample(remainder_y,0) # Seed y has to match the one on X
-    # Gotta reduce training X/y to just the selected attribute
-    reduced_training_X = get_column(1,training_X)
-    tree_1 = MyDecisionTreeClassifier()
-    tree_1.fit(reduced_training_X,training_y) # Gotta fill in fits
-
-    training_X, _ = compute_bootstrapped_sample(remainder_X,3)
-    training_y, _ = compute_bootstrapped_sample(remainder_y,3)
-    reduced_training_X = get_column(1, training_X)
-    tree_2 = MyDecisionTreeClassifier()
-    tree_2.fit(reduced_training_X,training_y)
-
-    training_X, _ = compute_bootstrapped_sample(remainder_X,4)
-    training_y, _ = compute_bootstrapped_sample(remainder_y,4)
-    reduced_training_X = get_column(2, training_X)
-    tree_3 = MyDecisionTreeClassifier()
-    tree_3.fit(reduced_training_X,training_y)
-
-    # NOTE FOR THIS AND THE NEXT ASSERT, REMEMBER TO CHECK HOW TIES
-    # ARE BROKEN IF TWO TREES PERFORM THE SAME
-    # ALSO, WHAT ORDER ARE THESE TREES SUPPOSED TO BE IN?
-    # THIS WILL BE A REASON THE ASSERTS FAIL
     test_forest.fit(interview_X_train,interview_y_train,5,3,1,seed=0)
-    forest_solution2=[[tree_3.tree,[2]],
-                      [tree_2.tree,[1]],
-                      [tree_1.tree,[1]]]
-    print('Forest solution 2: ', forest_solution2)
+    #print('Forest solution 2: ', forest_solution2)
     assert test_forest.trees == forest_solution2
 
     # Test 3: N=20, M=7, F=2 (Best 7/20 decision trees, each with 2 attributes)
     test_forest.fit(interview_X_train,interview_y_train,20,7,2,seed=0)
-    # Make tree to test against based off bootstrap sample the .fit() uses
-    forest_solution3 = []
-    attributes = [[0, 1],
-              [1, 3],
-              [0, 1],
-              [1, 3],
-              [0, 2],
-              [1, 2],
-              [1, 2],
-              [0, 1],
-              [2, 3],
-              [2, 3],
-              [1, 2],
-              [2, 3],
-              [0, 2],
-              [0, 1],
-              [1, 2],
-              [2, 3],
-              [2, 3],
-              [0, 3],
-              [0, 2],
-              [0, 2]]
-    for num in [4,9,10,5,6,12,15]:
-        training_X, _ = compute_bootstrapped_sample(remainder_X,num)
-        training_y, _ = compute_bootstrapped_sample(remainder_y,num)
-        reduced_training_X = get_columns(attributes[num],training_X)
-        this_tree = MyDecisionTreeClassifier()
-        this_tree.fit(reduced_training_X,training_y)
-        forest_solution3.append([this_tree.tree,attributes[num]])
-    print('Forest_solution 3:',forest_solution3)
+    #print('Forest_solution 3:',forest_solution3)
     assert test_forest.trees == forest_solution3 # ???
 
 
 def test_random_forest_classifier_predict():
     '''Tests random_forest_classifier_predict()'''
-    TODO: NotImplementedError
-    assert 0 == 1
+    # For this take the sets of trees for case 2 and 3 from the fit test
+    # Get their predictions, take the majority vote of them
+    # Compare that to what random_forest predicts
+    # Should be much simpler then fit (:
+
+    # Testing instance 1 for N=5, M=3, F=1
+    test_instance_A1 = ["Mid", "R", "yes", "no"]
+    test_forest=MyRandomForestClassifier()
+    test_forest.fit(interview_X_train,interview_y_train,5,3,1,seed=0)
+    solution_predictions = []
+    solution_predictions.append(tree_1.predict([['R']]))
+    #tree_1.print_decision_rules()
+    solution_predictions.append(tree_2.predict([['R']]))
+    #tree_3.print_decision_rules()
+    solution_predictions.append(tree_3.predict([['no']]))
+    majority_vote = MyDummyClassifier() # This is kinda silly, but hopefully it works
+    majority_vote.fit([],solution_predictions)
+    #print(solution_predictions)
+    #print(majority_vote.most_common_label)
+    solution_prediction_1 = majority_vote.most_common_label
+    assert test_forest.predict([test_instance_A1]) == solution_prediction_1
+
+    # Test instance 2 for N=5, M=3, F=1
+    test_instance_A2 = ["Senior", "Python", "yes", "yes"]
+    solution_predictions = []
+    solution_predictions.append(tree_1.predict([['Python']]))
+    #tree_1.print_decision_rules()
+    solution_predictions.append(tree_2.predict([['Python']]))
+    #tree_3.print_decision_rules()
+    solution_predictions.append(tree_3.predict([['yes']]))
+    majority_vote = MyDummyClassifier() # This is kinda silly, but hopefully it works
+    majority_vote.fit([],solution_predictions)
+    print(solution_predictions)
+    print(majority_vote.most_common_label)
+    solution_prediction_2 = majority_vote.most_common_label
+    assert test_forest.predict([test_instance_A2]) == solution_prediction_2
+
+    # Test instance 1 and 2 for N=20, M=7, F=2
+    test_forest.fit(interview_X_train,interview_y_train,20,7,2)
+    test_instance_B = [['Junior','Java','no','yes'],['Junior','Java','yes','no']]
+    solution_prediction_3 = NotImplemented
+    assert test_forest.predict(test_instance_B) == solution_prediction_3
