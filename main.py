@@ -150,3 +150,5 @@ forest.fit(interview_X_train,interview_y_train,5,3,1,0)
 print()
 print('Vs the solution is: ', [[tree_5.tree,[2]],[tree_4.tree,[1]],[tree_1.tree,[1]]])
 # I think this means that if there is a tie, the algorithm picks the tree with lower index
+
+forest.predict([["Mid", "R", "yes", "no"]])

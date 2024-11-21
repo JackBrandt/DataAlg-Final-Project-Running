@@ -1035,7 +1035,18 @@ class MyRandomForestClassifier:
                 The shape of X_test is (n_test_samples, n_features)
 
         Returns:
-            y_predicted(list of obj): The predicted target y values (parallel to X_test)
+            y_pred(list of obj): The predicted target y values (parallel to X_test)
         """
-        TODO: NotImplementedError
-        # Write tests first!
+        y_pred = []
+        all_preds=[]
+        for tree in self.trees:
+            cur_tree = MyDecisionTreeClassifier()
+            cur_tree.tree=tree[0]
+            cur_tree.X_train=get_columns(tree[1],self.X_train)
+            all_preds.append(cur_tree.predict(get_columns(tree[1],X_test)))
+        #print(all_preds)
+        for i in range(len(all_preds[0])):
+            majority_vote = MyDummyClassifier()
+            majority_vote.fit([],get_column(i,all_preds))
+            y_pred.append(majority_vote.most_common_label[0])
+        return y_pred

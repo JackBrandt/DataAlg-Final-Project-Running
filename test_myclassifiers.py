@@ -758,8 +758,8 @@ def test_random_forest_classifier_predict():
     majority_vote = MyDummyClassifier() # This is kinda silly, but hopefully it works
     majority_vote.fit([],solution_predictions)
     #print(solution_predictions)
-    #print(majority_vote.most_common_label)
-    solution_prediction_1 = [majority_vote.most_common_label]
+    print(majority_vote.most_common_label)
+    solution_prediction_1 = majority_vote.most_common_label
     assert test_forest.predict([test_instance_A1]) == solution_prediction_1
 
     # Test instance 2 for N=5, M=3, F=1
@@ -774,7 +774,7 @@ def test_random_forest_classifier_predict():
     majority_vote.fit([],solution_predictions)
     print(solution_predictions)
     print(majority_vote.most_common_label)
-    solution_prediction_2 = [majority_vote.most_common_label]
+    solution_prediction_2 = majority_vote.most_common_label
     assert test_forest.predict([test_instance_A2]) == solution_prediction_2
 
     # Test instance 1 and 2 for N=20, M=7, F=2
