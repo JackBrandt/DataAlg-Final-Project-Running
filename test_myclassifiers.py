@@ -664,6 +664,7 @@ forest_solution2=[[tree_3.tree,[2]],
     [tree_1.tree,[1]]]
 
 # Make tree to test against based off bootstrap sample the .fit() uses
+list_of_trees = []
 forest_solution3 = []
 attributes = [[0, 1],
     [1, 3],
@@ -691,6 +692,7 @@ for num in [4,9,10,5,6,12,15]:
     reduced_training_X = get_columns(attributes[num],training_X)
     this_tree = MyDecisionTreeClassifier()
     this_tree.fit(reduced_training_X,training_y)
+    list_of_trees.append(this_tree)
     forest_solution3.append([this_tree.tree,attributes[num]])
 
 # Apparently we'll be GRADED on using a test driven approach
@@ -757,7 +759,7 @@ def test_random_forest_classifier_predict():
     majority_vote.fit([],solution_predictions)
     #print(solution_predictions)
     #print(majority_vote.most_common_label)
-    solution_prediction_1 = majority_vote.most_common_label
+    solution_prediction_1 = [majority_vote.most_common_label]
     assert test_forest.predict([test_instance_A1]) == solution_prediction_1
 
     # Test instance 2 for N=5, M=3, F=1
@@ -772,11 +774,43 @@ def test_random_forest_classifier_predict():
     majority_vote.fit([],solution_predictions)
     print(solution_predictions)
     print(majority_vote.most_common_label)
-    solution_prediction_2 = majority_vote.most_common_label
+    solution_prediction_2 = [majority_vote.most_common_label]
     assert test_forest.predict([test_instance_A2]) == solution_prediction_2
 
     # Test instance 1 and 2 for N=20, M=7, F=2
-    test_forest.fit(interview_X_train,interview_y_train,20,7,2)
+    test_forest.fit(interview_X_train,interview_y_train,20,7,2,seed=0)
     test_instance_B = [['Junior','Java','no','yes'],['Junior','Java','yes','no']]
-    solution_prediction_3 = NotImplemented
+    attributes = [[0, 1],
+    [1, 3],
+    [0, 1],
+    [1, 3],
+    [0, 2],
+    [1, 2],
+    [1, 2],
+    [0, 1],
+    [2, 3],
+    [2, 3],
+    [1, 2],
+    [2, 3],
+    [0, 2],
+    [0, 1],
+    [1, 2],
+    [2, 3],
+    [2, 3],
+    [0, 3],
+    [0, 2],
+    [0, 2]]
+    attributes = [attributes[num] for num in [4,9,10,5,6,12,15]]
+    solution_predictions = []
+    for i,tree in enumerate(list_of_trees):
+        solution_predictions.append(tree.predict(get_columns(attributes[i],test_instance_B)))
+    print(solution_predictions)
+    solution_preds_p1 = [pred[0] for pred in solution_predictions]
+    solution_preds_p2 = [pred[1] for pred in solution_predictions]
+    solution_prediction_3 = []
+    majority_vote.fit([],solution_preds_p1)
+    solution_prediction_3.append(majority_vote.most_common_label)
+    majority_vote.fit([],solution_preds_p2)
+    solution_prediction_3.append(majority_vote.most_common_label)
+    print(solution_prediction_3)
     assert test_forest.predict(test_instance_B) == solution_prediction_3
