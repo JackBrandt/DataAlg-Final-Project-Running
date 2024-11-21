@@ -1000,7 +1000,7 @@ class MyRandomForestClassifier:
         all_trees = []
         for n in range(N):
             # Step 2.1: The bootstrapping <- Also need to know this for testing
-            print(seed+n)
+            #print(seed+n)
             training_X, validation_X = compute_bootstrapped_sample(remainder_X,seed+n)
             training_y, validation_y = compute_bootstrapped_sample(remainder_y,seed+n)
             #print(len(training_X),len(validation_X))
@@ -1008,7 +1008,7 @@ class MyRandomForestClassifier:
             # Randomly sample F attributes
             attribute_subset = compute_random_subset(list(range(len(training_X[0]))),F)
             attribute_subset.sort()
-            print(attribute_subset)
+            #print(attribute_subset)
             # ^-- As far as I can tell, getting to here is kinda what we need to know what trees to make to test against?
             # Make decision tree from sample
             tree = MyDecisionTreeClassifier()

@@ -41,6 +41,7 @@ forest.fit(interview_X_train,interview_y_train,5,3,1,0)
 
 # The following are all the trees that forest fit will generate
 get_column = lambda index, table: [[row[index]] for row in table]
+get_columns = lambda indexes, table: [[row[index] for index in indexes] for row in table]
 
 folds=stratified_kfold_split(interview_X_train,interview_y_train,3,0,True)
 fold = folds[0]
@@ -105,3 +106,41 @@ print(tree_5_accuracy)
 # So the best performing trees are tree 1/3,4,5
 # IDK how I plan to write the choose M trees, which is important to know so
 # I can know if tree 1 or 3 should be included in the test
+
+# Now for figuring out the correct answers for test 3... this is gonna suck
+# Cause there are 20 trees to check...
+# Might as well use a loop this
+
+forest.fit(interview_X_train,interview_y_train,20,7,2,0)
+attributes = [[0, 1],
+              [1, 3],
+              [0, 1],
+              [1, 3],
+              [0, 2],
+              [1, 2],
+              [1, 2],
+              [0, 1],
+              [2, 3],
+              [2, 3],
+              [1, 2],
+              [2, 3],
+              [0, 2],
+              [0, 1],
+              [1, 2],
+              [2, 3],
+              [2, 3],
+              [0, 3],
+              [0, 2],
+              [0, 2]]
+for i in range(20):
+    training_X, validation_X = compute_bootstrapped_sample(remainder_X,i)
+    training_y, validation_y = compute_bootstrapped_sample(remainder_y,i)
+    reduced_training_X = get_columns(attributes[i],training_X)
+    this_tree = mc.MyDecisionTreeClassifier()
+    this_tree.fit(reduced_training_X,training_y)
+    y_pred=this_tree.predict(get_columns(attributes[i],validation_X))
+    print('The accuracy of tree ', i, ' is: ',accuracy_score(validation_y,y_pred))
+# From this we conclude the 7 best trees are i=4,9,10,5,6,12,15,19
+    # Which is actually 8, because again there's a tie, and I have no
+    # idea how a tie is broken or how these tree's are going to be ordered
+    # *shrug

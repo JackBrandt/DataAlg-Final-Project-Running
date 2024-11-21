@@ -275,3 +275,4 @@ def compute_random_subset(values, num_values,seed=None):
     return values_copy[:num_values]
 
 get_column = lambda index, table: [[row[index]] for row in table]
+get_columns = lambda indexes, table: [[row[index] for index in indexes] for row in table]

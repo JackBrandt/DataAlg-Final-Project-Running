@@ -15,7 +15,8 @@ from mysklearn.myclassifiers import MyNaiveBayesClassifier
 from mysklearn.myclassifiers import MySimpleLinearRegressionClassifier,\
     MyKNeighborsClassifier, MyDummyClassifier, MyDecisionTreeClassifier,\
     MyRandomForestClassifier
-from mysklearn.myutils import discretizer, compute_bootstrapped_sample, get_column
+from mysklearn.myutils import discretizer, compute_bootstrapped_sample,\
+      get_column, get_columns
 from mysklearn.myevaluation import stratified_kfold_split
 
 # from in-class #1  (4 instances)
@@ -689,35 +690,50 @@ def test_random_forest_classifier_fit():
     tree_3 = MyDecisionTreeClassifier()
     tree_3.fit(reduced_training_X,training_y)
 
+    # NOTE FOR THIS AND THE NEXT ASSERT, REMEMBER TO CHECK HOW TIES
+    # ARE BROKEN IF TWO TREES PERFORM THE SAME
+    # ALSO, WHAT ORDER ARE THESE TREES SUPPOSED TO BE IN?
+    # THIS WILL BE A REASON THE ASSERTS FAIL
     test_forest.fit(interview_X_train,interview_y_train,5,3,1,seed=0)
-    assert test_forest.trees == [[tree_1.tree,[1]],
-                                 [tree_2.tree,[1]],
-                                 [tree_3.tree,[2]]]
+    forest_solution2=[[tree_1.tree,[1]],
+                      [tree_2.tree,[1]],
+                      [tree_3.tree,[2]]]
+    print('Forest solution 2: ', forest_solution2)
+    assert test_forest.trees == forest_solution2
 
     # Test 3: N=20, M=7, F=2 (Best 7/20 decision trees, each with 2 attributes)
     test_forest.fit(interview_X_train,interview_y_train,20,7,2,seed=0)
     # Make tree to test against based off bootstrap sample the .fit() uses
-    tree_1 = MyDecisionTreeClassifier()
-    tree_1.fit(NotImplemented) # Gotta fill in fits
-    tree_2 = MyDecisionTreeClassifier()
-    tree_2.fit(NotImplemented)
-    tree_3 = MyDecisionTreeClassifier()
-    tree_3.fit(NotImplemented)
-    tree_4 = MyDecisionTreeClassifier()
-    tree_4.fit(NotImplemented) # Gotta fill in fits
-    tree_5 = MyDecisionTreeClassifier()
-    tree_5.fit(NotImplemented)
-    tree_6 = MyDecisionTreeClassifier()
-    tree_6.fit(NotImplemented)
-    tree_7 = MyDecisionTreeClassifier()
-    tree_7.fit(NotImplemented)
-    assert test_forest.trees == [[tree_1.tree,[NotImplemented]],
-                                 [tree_2.tree,[NotImplemented]],
-                                 [tree_3.tree,[NotImplemented]],
-                                 [tree_4.tree,[NotImplemented]],
-                                 [tree_5.tree,[NotImplemented]],
-                                 [tree_6.tree,[NotImplemented]],
-                                 [tree_7.tree,[NotImplemented]]] # Still gotta fill in attributes
+    forest_solution3 = []
+    attributes = [[0, 1],
+              [1, 3],
+              [0, 1],
+              [1, 3],
+              [0, 2],
+              [1, 2],
+              [1, 2],
+              [0, 1],
+              [2, 3],
+              [2, 3],
+              [1, 2],
+              [2, 3],
+              [0, 2],
+              [0, 1],
+              [1, 2],
+              [2, 3],
+              [2, 3],
+              [0, 3],
+              [0, 2],
+              [0, 2]]
+    for num in [4,9,10,5,6,12,15]:
+        training_X, _ = compute_bootstrapped_sample(remainder_X,num)
+        training_y, _ = compute_bootstrapped_sample(remainder_y,num)
+        reduced_training_X = get_columns(attributes[num],training_X)
+        this_tree = MyDecisionTreeClassifier()
+        this_tree.fit(reduced_training_X,training_y)
+        forest_solution3.append([this_tree.tree,attributes[num]])
+    print('Forest_solution 3:',forest_solution3)
+    assert test_forest.trees == forest_solution3 # ???
 
 
 def test_random_forest_classifier_predict():
