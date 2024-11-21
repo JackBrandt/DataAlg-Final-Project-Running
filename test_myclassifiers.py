@@ -671,8 +671,8 @@ def test_random_forest_classifier_fit():
 
     # Test 2: N=5, M=3, F=1 (Best 3/5 decision trees, each with 1 attribute)
     # Make tree to test against based off bootstrap sample the .fit() uses
-    training_X, _ = compute_bootstrapped_sample(remainder_X,2) # The seed for these depends on what number tree that is generated is the best
-    training_y, _ = compute_bootstrapped_sample(remainder_y,2) # Seed y has to match the one on X
+    training_X, _ = compute_bootstrapped_sample(remainder_X,0) # The seed for these depends on what number tree that is generated is the best
+    training_y, _ = compute_bootstrapped_sample(remainder_y,0) # Seed y has to match the one on X
     # Gotta reduce training X/y to just the selected attribute
     reduced_training_X = get_column(1,training_X)
     tree_1 = MyDecisionTreeClassifier()
@@ -695,9 +695,9 @@ def test_random_forest_classifier_fit():
     # ALSO, WHAT ORDER ARE THESE TREES SUPPOSED TO BE IN?
     # THIS WILL BE A REASON THE ASSERTS FAIL
     test_forest.fit(interview_X_train,interview_y_train,5,3,1,seed=0)
-    forest_solution2=[[tree_1.tree,[1]],
+    forest_solution2=[[tree_3.tree,[2]],
                       [tree_2.tree,[1]],
-                      [tree_3.tree,[2]]]
+                      [tree_1.tree,[1]]]
     print('Forest solution 2: ', forest_solution2)
     assert test_forest.trees == forest_solution2
 
@@ -739,3 +739,4 @@ def test_random_forest_classifier_fit():
 def test_random_forest_classifier_predict():
     '''Tests random_forest_classifier_predict()'''
     TODO: NotImplementedError
+    assert 0 == 1

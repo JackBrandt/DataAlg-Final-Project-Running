@@ -16,9 +16,10 @@ import os
 import time
 import numpy as np
 from mysklearn.myutils import compute_euclidean_distance, classifier_accuracy,\
-    discretizer_classifier, compute_bootstrapped_sample, compute_random_subset
+    discretizer_classifier, compute_bootstrapped_sample, compute_random_subset,\
+    get_column,get_columns
 import mysklearn.myutils as mu
-from mysklearn.myevaluation import stratified_kfold_split, train_test_split
+from mysklearn.myevaluation import stratified_kfold_split, accuracy_score
 from mysklearn.mysimplelinearregressor import MySimpleLinearRegressor
 
 
@@ -998,6 +999,7 @@ class MyRandomForestClassifier:
             # you are selecting from only a (randomly chosen) subset of the available attributes.
             # ^-- These should be parallel because of seeding
         all_trees = []
+        tree_accuracies = []
         for n in range(N):
             # Step 2.1: The bootstrapping <- Also need to know this for testing
             #print(seed+n)
@@ -1012,12 +1014,18 @@ class MyRandomForestClassifier:
             # ^-- As far as I can tell, getting to here is kinda what we need to know what trees to make to test against?
             # Make decision tree from sample
             tree = MyDecisionTreeClassifier()
-            tree.fit(training_X,training_y)
+            tree.fit(get_columns(attribute_subset,training_X),training_y)
             all_trees.append([tree.tree,attribute_subset])
-
-        # Step 3: Select the M most accurate of the N decision trees using the corresponding validation sets.
-            TODO: NotImplementedError
-            self.trees = all_trees
+            # Step 3: Select the M most accurate of the N decision trees using the corresponding validation sets.
+            y_pred=tree.predict(get_columns(attribute_subset,validation_X))
+            accuracy = accuracy_score(validation_y,y_pred)
+            tree_accuracies.append((accuracy,n))
+            #print('The accuracy of tree ', i, ' is: ',accuracy_score(validation_y,y_pred))
+        # Step 3 continued
+        tree_accuracies.sort(key=lambda x: x[0], reverse=True)
+        indicies_of_M_trees = [accuracy[1] for accuracy in tree_accuracies[:M]]
+        self.trees = [all_trees[i] for i in indicies_of_M_trees]
+        print(self.trees)
 
     def predict(self, X_test):
         """Makes predictions for test instances in X_test.

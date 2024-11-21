@@ -103,9 +103,8 @@ y_pred = tree_5.predict(get_column(2,validation_X))
 print(y_pred)
 tree_5_accuracy = accuracy_score(validation_y,y_pred)
 print(tree_5_accuracy)
-# So the best performing trees are tree 1/3,4,5
-# IDK how I plan to write the choose M trees, which is important to know so
-# I can know if tree 1 or 3 should be included in the test
+# So the best performing trees are tree 1,4,5
+# Technically 1 and 3 are a tie, but we'll pick the one that is first
 
 # Now for figuring out the correct answers for test 3... this is gonna suck
 # Cause there are 20 trees to check...
@@ -144,3 +143,10 @@ for i in range(20):
     # Which is actually 8, because again there's a tie, and I have no
     # idea how a tie is broken or how these tree's are going to be ordered
     # *shrug
+
+# This is for figuring out which order the trees should come in
+print()
+forest.fit(interview_X_train,interview_y_train,5,3,1,0)
+print()
+print('Vs the solution is: ', [[tree_5.tree,[2]],[tree_4.tree,[1]],[tree_1.tree,[1]]])
+# I think this means that if there is a tie, the algorithm picks the tree with lower index
