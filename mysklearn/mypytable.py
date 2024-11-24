@@ -236,12 +236,27 @@ class MyPyTable:
         for row in self.data:
             missing_value=False
             for element in row:
-                if element == 'NA':
+                if element == '' or element == 'NA':
                     #print(element)
                     #print(True)
                     missing_value=True
                     break
             if not missing_value:
+                full_table.append(row)
+        self.data=full_table
+
+    def remove_rows_where_col_equal_specified(self,column_index, value):
+        '''Removes all rows where the value in a specified column matches input value
+        Args:
+            column_index (int): The index of the column you want to check for a specific value
+            value (str): The value you want to check for
+        '''
+        full_table=[]
+        for row in self.data:
+            bad_value=False
+            if row[column_index] == value:
+                    bad_value=True
+            if not bad_value:
                 full_table.append(row)
         self.data=full_table
 
