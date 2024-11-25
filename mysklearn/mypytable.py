@@ -129,6 +129,20 @@ class MyPyTable:
                 column.append(self.data[i][index])
         return column
 
+    def get_row_data_by_column(self, row, column_name):
+        """
+            Extracts the column data from a row using the column name
+
+            Args:
+                row(list(obj)): the row to extract the data from
+                column_name(str): the column name
+
+            Returns:
+                obj: the data from the row
+        """
+
+        return row[self.get_index(column_name)]
+
     def convert_to_numeric(self):
         """Try to convert each value in the table to a numeric type (float).
 
