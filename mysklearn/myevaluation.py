@@ -463,6 +463,49 @@ def cross_confusion_matrix_method(model, k, X, y, labels,
                          matrix)
     return table
 
+def cross_confusion_matrix_method_forest(model, k, X, y, labels,
+                                  data_label, N, M, F, stratify=False):
+    '''Preps confusion matrix to be printed using cross validation
+
+     Args:
+        model (mysklearn classifier object): The model to be evaluated
+        k (int): Number of folds
+        X (list of list): Independent data
+        y (list): Dependent class data
+        labels (list): List of labels
+        data_label (str): What data is the model being tested on
+        N (int): Number of trees genereated
+        M (int): Number of trees chosen
+        F (int): Size of atttribute subset treees are generated from
+        stratify (bool): Use stratification?
+
+    Returns:
+        MyPyTable: The confusion matrix
+    '''
+    # Get folds
+    if stratify:
+        folds = stratified_kfold_split(X,y,k)
+    else:
+        folds = kfold_split(X, k)
+
+    # Get accuracy over folds
+    matrix=confusion_matrix([],[],labels)
+    for fold in folds:
+        model.fit([X[i] for i in fold[0]], [y[i] for i in fold[0]],N,M,F)
+        y_pred=model.predict([X[i] for i in fold[1]])
+        y_true=[y[i] for i in fold[1]]
+        new_matrix_part=confusion_matrix(y_true,y_pred,labels)
+        matrix=[[matrix[i][j] + element for j,
+                 element in enumerate(row)] for i,
+                 row in enumerate(new_matrix_part)]
+
+    matrix=[[labels[i]]+row+[sum(row)]+[row[i]/sum(row)*100] if sum(row)>0 else
+            [labels[i]]+row+[sum(row)]+[0] for i,row in enumerate(matrix)]
+    # Store as MyPyTable for convience
+    table = mp.MyPyTable([data_label]+ labels+['Total','Recognition (%)'],
+                         matrix)
+    return table
+
 def binary_precision_score(y_true, y_pred, labels=None, pos_label=None):
     """Compute the precision (for binary classification). The precision is the ratio  true_positive /  (true_positive +  false_positive)
         where  true_positive is the number of true positives and  false_positive the number of false positives.
@@ -618,6 +661,42 @@ def get_trues_and_preds_from_folds(model, folds, X, y):
         all_preds += y_pred
     return all_trues, all_preds
 
+def get_trues_and_preds_from_folds_forest(model, folds, X, y, N, M, F):
+    '''Gets 2 lists from from a list of folds, the collection of actual y's
+    and all predicted y's
+
+    Args:
+        model (mysklearn classifier): The model predicting stuff
+        folds (list of 2-item tuples): The list of folds where each fold is
+          defined as a 2-item tuple. The first item in the tuple is the list
+            of training set indices for the fold. The second item in the tuple
+              is the list of testing set indices for the fold
+        X (list of lists): The independent data
+        y (list): The dependent categoral data
+        N (int): Number of trees genereated
+        M (int): Number of trees chosen
+        F (int): Size of atttribute subset treees are generated from
+
+    Returns:
+        list: All actual y's
+        list: All predicted y's, parallel to all actual y's
+    '''
+    all_trues = []
+    all_preds = []
+    for fold in folds:
+        # Fit model
+        X_train = [X[i] for i in fold[0]]
+        y_train = [y[i] for i in fold[0]]
+        model.fit(X_train,y_train, N, M, F)
+        # Make predictions
+        X_test = [X[i] for i in fold[1]]
+        y_test = [y[i] for i in fold[1]]
+        y_pred = model.predict(X_test)
+        # Add to collection
+        all_trues += y_test
+        all_preds += y_pred
+    return all_trues, all_preds
+
 
 def get_metrics_and_conf_matrix_and_report(model,k,X,y,labels,pos_label,data_label):
     '''Uses stratified k-fold cross validation to calculate classifier
@@ -645,6 +724,37 @@ def get_metrics_and_conf_matrix_and_report(model,k,X,y,labels,pos_label,data_lab
              binary_recall_score(all_trues,all_preds,pos_label=pos_label),
              binary_f1_score(all_trues,all_preds,pos_label=pos_label)]
     return metrics, cross_confusion_matrix_method(model,k,X,y,labels,data_label,
+            True), classification_report(all_trues,all_preds)
+
+def get_metrics_and_conf_matrix_and_report_forest(model,k,X,y,labels,pos_label,data_label,N,M,F):
+    '''Uses stratified k-fold cross validation to calculate classifier
+    performance metrics and confusion matrix
+
+    Args:
+        model (mysklearn classifier): The model to be evaluated
+        k (int): The number of folds
+        X (list of lists): The independent data
+        y (list): The dependent categoral data
+        labels (list of strings): The labels for each attribute
+        pos_label (any): The label of a positive prediction
+        data_label (string): Name of data model is being tested on
+        N (int): Number of trees genereated
+        M (int): Number of trees chosen
+        F (int): Size of atttribute subset treees are generated from
+
+
+    Returns:
+        list: [accuracy, precision, recall, f1]
+        MyPyTable: The confusion matrix'''
+
+    folds = stratified_kfold_split(X,y,k)
+    all_trues, all_preds = get_trues_and_preds_from_folds_forest(model,folds,X,y, N,M,F)
+    metrics=[mu.classifier_accuracy(all_preds,all_trues),#This function bc we just want
+             # only the accuracy,
+             binary_precision_score(all_trues,all_preds,pos_label=pos_label),
+             binary_recall_score(all_trues,all_preds,pos_label=pos_label),
+             binary_f1_score(all_trues,all_preds,pos_label=pos_label)]
+    return metrics, cross_confusion_matrix_method_forest(model,k,X,y,labels,data_label,N,M,F,
             True), classification_report(all_trues,all_preds)
 
 def classification_report(y_true,y_pred,labels=None,output_dict=False):
