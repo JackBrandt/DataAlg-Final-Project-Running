@@ -259,6 +259,19 @@ class MyPyTable:
                 full_table.append(row)
         self.data=full_table
 
+    def remove_row_if(self, column_index, condition):
+        """Remove rows from the table data where the condition is True.
+
+        Args:
+            column_index(int): the column to check the condition
+            condition(callable): a function that takes a value and returns True or False
+        """
+        full_table=[]
+        for row in self.data:
+            if not condition(row[column_index]):
+                full_table.append(row)
+        self.data=full_table
+
     def remove_rows_where_col_equal_specified(self,column_index, value):
         '''Removes all rows where the value in a specified column matches input value
         Args:
