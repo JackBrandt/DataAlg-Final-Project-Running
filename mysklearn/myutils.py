@@ -276,3 +276,47 @@ def compute_random_subset(values, num_values,seed=None):
 
 get_column = lambda index, table: [[row[index]] for row in table]
 get_columns = lambda indexes, table: [[row[index] for index in indexes] for row in table]
+
+def combine_multiple_files(files: list[str], folder_name: str) -> MyPyTable:
+    '''Combines multiple files into one table
+    Args:
+        files (list of strings): The paths to the files you want to combine
+    Returns:
+        MyPyTable: The combined table
+    '''
+
+    combined_table = MyPyTable()
+   
+    tables = [
+        MyPyTable().load_from_file(
+            f"./{folder_name}/{file_name}"
+        )
+        for file_name in files
+    ]
+
+    common_columns = set(tables[0].column_names)
+
+    for table in tables:
+        column_name_set = set(table.column_names)
+        common_columns = common_columns.intersection(column_name_set)
+
+
+    combined_data = []
+
+    for table in tables:
+        for row in table.data:
+            combined_row = []
+
+            # For each row, only add the columns that are common
+            for column in common_columns:
+                combined_row.append(row[table.column_names.index(column)])
+
+            # Add the row to the combined data
+            combined_data.append(combined_row)
+
+
+
+    combined_table.column_names = list(common_columns)
+    combined_table.data = combined_data
+
+    return combined_table
