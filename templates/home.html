@@ -1,0 +1,40 @@
+<!--
+#=====================================================================================
+#Jack Brandt
+#Course: CPSC 321
+#Assignment: Final
+#Date of current version: 12/??/2024
+#Brief description of what program does:
+#    Homepage html
+#=====================================================================================
+-->
+
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>
+            Jack and Suyuash's Flask App
+        </title>
+        <link rel="stylesheet" href="static/css/styles.css">
+    </head>
+    <body>
+        <div class=header>
+            <h1>
+                Welcome to Jack and Suyuash's Homepage for DataAlg Final Project
+            </h1>
+            <p class="header">
+                All this app does is talk to our running speed prediction model.
+                To use, just input the previous day's maximum stress level (on a scale of 1 to a 100),
+                the average heart rate for the run (expecting a value between 120 and 180),
+                and the duration (in minutes).
+            </p>
+        </div>
+        <form method="POST" action="/">
+            <label for="name">Add policy:</label>
+            <input type="text" id="stress_level" name="stress_level" placeholder="Stress Level">
+            <input type="text" id="average_heart_rate" name="average_heart_rate" placeholder="Average Heart Rate">
+            <input type="text" id="duration" name="duration" placeholder="Duration Number">
+            <button type="submit">Submit</button>
+        </form>
+    </body>
+</html>

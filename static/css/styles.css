@@ -1,0 +1,54 @@
+/*
+#=====================================================================================
+#Jack Brandt
+#Course: CPSC 321
+#Assignment: Final
+#Date of current version: 12/??/2024
+#Brief description of what program does:
+#    css style, i have no idea what css is... I'm just following the w3 tutorial
+#=====================================================================================
+*/
+
+body {
+    background-color: #F4F4F4;
+    margin: 0;
+  }
+h1 {
+    font-family: sans-serif;
+    color:white;
+    font-size:300%;
+    text-align:center;
+}
+p {
+    color: black;
+    font-family: Arial;
+    font-size:150%;
+    margin: 20px;
+    text-align: left;
+}
+p.header {
+  color:white;
+}
+div.header {
+  background-color:#222b36;
+  text-align: center;
+
+  padding: 1%;
+}
+div.butt {
+  background-color: white;
+  color: #0078d4;
+  padding: 20px;
+  font-size:125%;
+  text-indent: 10%;
+  text-align: center;
+  flex-grow: 1;
+}
+
+div.flex {
+  display: flex;
+}
+a.nav {
+  text-decoration: none;
+  flex-grow: 1;
+}
