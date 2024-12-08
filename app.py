@@ -8,8 +8,10 @@
 #    Flask app, flask app, flask app
 #=====================================================================================
 '''
-
 from flask import Flask,render_template, request
+from mysklearn.myutils import load_model, stress_discretizer,heart_rate_discretizer,\
+    duration_discretizer
+from mysklearn.myclassifiers import MyKNeighborsClassifier
 
 app = Flask(__name__)
 
@@ -17,8 +19,14 @@ app = Flask(__name__)
 @app.route("/", methods=["GET", "POST"])
 def homepage():
     if request.method == "POST":
-        page=''
-        return page
+        stress_level = int(request.form["stress_level"])
+        average_heart_rate = int(request.form["average_heart_rate"])
+        duration = int(request.form["duration"])*60*1000 # Converting to miliseconds
+        clas = MyKNeighborsClassifier(3)
+        X_train,y_train = load_model()
+        clas.fit(X_train,y_train)
+        prediction = clas.predict([[stress_discretizer(stress_level),heart_rate_discretizer(average_heart_rate),duration_discretizer(duration)]])
+        return str(prediction)
     return render_template('home.html')
 
 if __name__ == '__main__':

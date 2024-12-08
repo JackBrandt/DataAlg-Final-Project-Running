@@ -10,7 +10,9 @@
 #=====================================================================================
 """
 import numpy as np # use numpy's random number generation
+import pickle
 from mysklearn.mypytable import MyPyTable
+
 
 def discretizer(val):
     """Discretizer function
@@ -286,7 +288,7 @@ def combine_multiple_files(files: list[str], folder_name: str) -> MyPyTable:
     '''
 
     combined_table = MyPyTable()
-   
+
     tables = [
         MyPyTable().load_from_file(
             f"./{folder_name}/{file_name}"
@@ -320,3 +322,71 @@ def combine_multiple_files(files: list[str], folder_name: str) -> MyPyTable:
     combined_table.data = combined_data
 
     return combined_table
+
+def load_model():
+    '''Unpickles our knn model
+    Returns:
+        X_train (list of lists): All of our final discretized X data
+        y_train (list): All of our final discretized y data
+    '''
+    # unpickle header and tree in tree.p
+    infile = open('knn.p', 'rb')
+    X_train,y_train=pickle.load(infile)
+    infile.close()
+    return X_train, y_train
+
+def speed_discretizer(speed):
+    '''Discretizes speed:
+    Args:
+        speed (float): Speed
+    Returns:
+        str
+    '''
+    if speed < 0.32:
+        return "slow"
+    elif speed < 0.33:
+        return "mild"
+    else:
+        return "fast"
+
+def heart_rate_discretizer(bpm):
+    '''Discretizes hr:
+    Args:
+        hr (int): hr
+    Returns:
+        str
+    '''
+    if(bpm < 150):
+        return "low"
+    elif(bpm < 165):
+        return "mid"
+
+    return "high"
+
+def stress_discretizer(stress):
+    '''Discretizes stress:
+    Args:
+        stress (int): stress
+    Returns:
+        str
+    '''
+    if(stress < 90):
+        return "low"
+    elif(stress < 95):
+        return "mid"
+
+    return "high"
+
+def duration_discretizer(duration):
+    '''Discretizes duration:
+    Args:
+        duration (int): duration
+    Returns:
+        str
+    '''
+    if(duration < 2_000_000):
+        return "low"
+    elif(duration < 4_000_000):
+        return "mid"
+
+    return "high"
