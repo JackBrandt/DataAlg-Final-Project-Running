@@ -26,7 +26,7 @@ def homepage():
         X_train,y_train = load_model()
         clas.fit(X_train,y_train)
         prediction = clas.predict([[stress_discretizer(stress_level),heart_rate_discretizer(average_heart_rate),duration_discretizer(duration)]])
-        return str(prediction)
+        return prediction[1]
     return render_template('home.html')
 
 if __name__ == '__main__':
