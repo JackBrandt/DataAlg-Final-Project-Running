@@ -13,14 +13,14 @@
 <html lang="en-US">
     <head>
         <title>
-            Jack and Suyuash's Flask App
+            Jack and Suyash's Flask App
         </title>
         <link rel="stylesheet" href="static/css/styles.css">
     </head>
     <body>
         <div class=header>
             <h1>
-                Welcome to Jack and Suyuash's Homepage for DataAlg Final Project
+                Welcome to Jack and Suyash's Homepage for DataAlg Final Project
             </h1>
             <p class="header">
                 All this app does is talk to our running speed prediction model.
@@ -29,12 +29,61 @@
                 and the duration (in minutes).
             </p>
         </div>
-        <form method="POST" action="/">
-            <label for="name">Add policy:</label>
-            <input type="text" id="stress_level" name="stress_level" placeholder="Stress Level">
-            <input type="text" id="average_heart_rate" name="average_heart_rate" placeholder="Average Heart Rate">
-            <input type="text" id="duration" name="duration" placeholder="Duration Number">
+        <form id="form">
+            <label for="name">
+                <h2>
+                    <b>Add policy:</b> 
+                </h2>
+            </label>
+            <table>
+                <tr>
+                    <td>Stress Level</td>
+                    <td><input type="number" min="0" max="100" id="stress_level" name="stress_level"></td>
+
+                </tr>
+                <tr>
+                    <td>Average Heart Rate</td>
+                    <td><input type="number" min="120" max="180" id="average_heart_rate" name="average_heart_rate"></td>
+                </tr>
+                <tr>
+                    <td>Duration (in minutes)</td>
+                    <td><input type="number" id="duration" name="duration"></td>
+                </tr>
+            </table>
             <button type="submit">Predict</button>
+            <button type="reset">Reset</button>
+            <div id="result"></div>
         </form>
     </body>
+    <script>
+        const form = document.getElementById("form");
+        const stress_level = document.getElementById("stress_level");
+        const average_heart_rate = document.getElementById("average_heart_rate");
+        const duration = document.getElementById("duration");
+
+        form.addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const stressLevel = parseFloat(stress_level.value);
+            const averageHeartRate = parseFloat(average_heart_rate.value);
+            const durationValue = parseFloat(duration.value) * 1000 * 60;
+
+
+            const formData = new FormData();
+            formData.append("stress_level", stressLevel);
+            formData.append("average_heart_rate", averageHeartRate);
+            formData.append("duration", durationValue);
+
+            const response = await (await fetch("/", {
+                method: "POST",
+                body: formData
+            })).text();
+
+            document.getElementById("result").innerText = `The run was: ${response}`;
+
+            
+        })
+
+
+    </script>
 </html>
