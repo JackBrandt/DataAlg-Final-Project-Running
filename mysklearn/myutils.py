@@ -344,7 +344,7 @@ def speed_discretizer(speed):
     '''
     if speed < 0.32:
         return "slow"
-    elif speed < 0.33:
+    elif speed < 0.331:
         return "mild"
     else:
         return "fast"
@@ -356,9 +356,9 @@ def heart_rate_discretizer(bpm):
     Returns:
         str
     '''
-    if(bpm < 150):
+    if(bpm < 148):
         return "low"
-    elif(bpm < 165):
+    elif(bpm < 156):
         return "mid"
 
     return "high"
@@ -370,9 +370,9 @@ def stress_discretizer(stress):
     Returns:
         str
     '''
-    if(stress < 90):
+    if(stress < 91):
         return "low"
-    elif(stress < 95):
+    elif(stress < 94):
         return "mid"
 
     return "high"
@@ -384,9 +384,9 @@ def duration_discretizer(duration):
     Returns:
         str
     '''
-    if(duration < 2_000_000):
+    if(duration < 1_900_000):
         return "low"
-    elif(duration < 4_000_000):
+    elif(duration < 2_800_000):
         return "mid"
 
     return "high"
