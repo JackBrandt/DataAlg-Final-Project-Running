@@ -1,4 +1,4 @@
-Project description:
+# Project description:
     Brief description of project goals:
         * Classify running speed based off other metrics
         * Learn about random forest classification
@@ -6,11 +6,11 @@ Project description:
         * Deploy a web app with our best model (*The bonus*)
         * Report on our findings
     And we accomplished all our goals, including the bonus
-How to run:
+# How to run:
     If all you're interested in is reading the project report, just open this project with some environment with Jupyter Notebook capabilities (like VScode) and click on project_proposal.ipynb. If it's not already ran for you, just hit run all at the top. If you are interested in running a local version of the web app (unnecessary since there is a version hosted on Render), just type:
         python app.py
     into the terminal and it will start the web app, then navigate to the https:whatever ip it says in ther terminal/. If you just want to access the one hosted on Render navigate to the link include down below and wait for Render to spin up the site.
-How project is organized:
+# How project is organized:
     * Data for this project is stored in a number of directories.
         * unprocessed Garmin data: to see a subset of the origin data Garmin returned
         * csv_converted_data: The data converted to csv's
@@ -21,5 +21,5 @@ How project is organized:
     * app.py contains the program for the web app itself
     * test_myclassifiers.py contains tests for the classifiers in mysklearn, including for random forest
     * running_technical_report.ipynb is our final project technical report
-Link to flask app:
+# Link to flask app:
     https://dataalg-final-project-running.onrender.com/
