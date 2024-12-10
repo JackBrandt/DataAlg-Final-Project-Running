@@ -21,18 +21,26 @@ def homepage():
     if request.method == "POST":
         stress_level = int(request.form["stress_level"])
         average_heart_rate = int(request.form["average_heart_rate"])
-        duration = int(request.form["duration"])*60*1000 # Converting to miliseconds
-        clas = MyKNeighborsClassifier(3)
+        duration = int(request.form["duration"])
+
         X_train,y_train = load_model()
-        clas.fit(X_train,y_train)
-        prediction = clas.predict([[stress_discretizer(stress_level),heart_rate_discretizer(average_heart_rate),duration_discretizer(duration)]])
-        return prediction[0]
+        classifier = MyKNeighborsClassifier(3)
+        classifier.fit(X_train,y_train)
+        prediction = classifier.predict([
+            [
+                stress_discretizer(stress_level),
+                heart_rate_discretizer(average_heart_rate),
+                duration_discretizer(duration)
+            ]
+        ])
+        
+        if(prediction is None):
+            return "Error"
+        else:
+            return prediction[0]
+    
+    # If the request method is GET, return the home page
     return render_template('home.html')
 
 if __name__ == '__main__':
-    # header, tree = load_model()
-    # print(header)
-    # print(tree)
     app.run(host='0.0.0.0',port=5000, debug=True)
-    # TODO: when deploy app to 'production', set debug=False
-    # and check host and port values
